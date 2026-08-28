@@ -82,7 +82,24 @@ function toRecipientString(input: HTMLInputElement | null): string {
     return "";
   }
 
-  const value = (input.value ?? "").trim();
+  let value = "";
+
+  if (typeof input.value === "string") {
+    value = input.value;
+  } else {
+    const chips = input.querySelectorAll<HTMLElement>(
+      "div[data-email], span[data-email], [data-hovercard-email]"
+    );
+    if (chips.length > 0) {
+      value = Array.from(chips)
+        .map((chip) => chip.getAttribute("data-email") ?? chip.textContent ?? "")
+        .join(", ");
+    } else {
+      value = input.textContent ?? "";
+    }
+  }
+
+  value = value.trim();
 
   if (!value) {
     return "";

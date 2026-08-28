@@ -62,20 +62,14 @@ export function handleSendShortcut(event: KeyboardEvent): void {
     return;
   }
 
+  event.preventDefault();
+  event.stopImmediatePropagation();
+
   const compose = findComposeFromActiveElement();
 
   if (!compose) {
     return;
   }
-
-  const recipient = compose.getRecipient();
-
-  if (!recipient) {
-    return;
-  }
-
-  event.preventDefault();
-  event.stopImmediatePropagation();
 
   void doSend(compose);
 }
