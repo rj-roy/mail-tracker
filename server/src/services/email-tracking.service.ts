@@ -13,7 +13,6 @@ export interface CreateTrackedEmailInput {
   userId: ObjectId;
   recipient: string;
   subject: string;
-  senderFingerprint?: string;
 }
 
 export interface RecordOpenInput {
@@ -38,7 +37,6 @@ export async function createTrackedEmail(
     threadId: "",
     recipient: input.recipient,
     subject: input.subject,
-    senderFingerprint: input.senderFingerprint ?? "",
     sentAt: now,
     createdAt: now,
   });
@@ -144,16 +142,6 @@ export async function recordOpen(
 
   if (!tracked) {
     return { found: false };
-  }
-
-  const openFingerprint = input.userAgent ?? "";
-
-  if (
-    tracked.senderFingerprint &&
-    openFingerprint &&
-    tracked.senderFingerprint === openFingerprint
-  ) {
-    return { found: true };
   }
 
   const opens = await emailOpensCollection();

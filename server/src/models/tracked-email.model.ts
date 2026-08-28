@@ -13,8 +13,6 @@ export interface TrackedEmail {
   recipient: string;
   subject: string;
 
-  senderFingerprint?: string;
-
   sentAt: Date;
   createdAt: Date;
 }
