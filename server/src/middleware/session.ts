@@ -1,8 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import {
-  COOKIE_NAME,
-  readSessionCookieValue,
-} from "../utils/session-cookie.js";
+import { COOKIE_NAME, readSessionCookieValue } from "../utils/session-cookie.js";
 import { findUserByGoogleId } from "../services/google-auth.service.js";
 import type { User } from "../models/user.model.js";
 
@@ -15,11 +12,7 @@ declare global {
   }
 }
 
-export async function sessionMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+export async function sessionMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const rawCookie = parseCookieHeader(
       req.headers.cookie,
@@ -42,10 +35,7 @@ export async function sessionMiddleware(
   }
 }
 
-function parseCookieHeader(
-  header: string | undefined,
-  name: string
-): string | undefined {
+function parseCookieHeader(header: string | undefined, name: string): string | undefined {
   if (!header) {
     return undefined;
   }

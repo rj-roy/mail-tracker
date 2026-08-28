@@ -20,9 +20,7 @@ export interface CreateTrackedEmailRequest {
   subject: string;
 }
 
-export async function registerTrackedEmail(
-  message: TrackEmailMessage
-): Promise<void> {
+export async function registerTrackedEmail(message: TrackEmailMessage): Promise<void> {
   const body: CreateTrackedEmailRequest = {
     trackingId: message.trackingId,
     recipient: message.recipient,

@@ -1,25 +1,21 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { getSessionSecret } from "../config/google-oauth.js";
 
-const COOKIE_NAME = "mail_tracker_session";
+const COOKIE_NAME = process.env.RAW_COOKIE_NAME!;
 
-function sign(value: string): string {
-  return createHmac("sha256", getSessionSecret())
-    .update(value)
-    .digest("base64url");
-}
+const sign = (value: string) => {
+  return createHmac('sha256', getSessionSecret()).update(value).digest('base64');
+};
 
 export function createSessionCookieValue(googleId: string): string {
   const payload = Buffer.from(googleId, "utf8").toString("base64url");
   return `${payload}.${sign(payload)}`;
 }
 
-export function readSessionCookieValue(
-  raw: string | undefined
-): string | null {
+export function readSessionCookieValue(raw: string | undefined): string | null {
   if (!raw) {
     return null;
-  }
+  };
 
   const [payload, signature] = raw.split(".");
 

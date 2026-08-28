@@ -11,7 +11,7 @@ async function bootstrap() {
     await createIndexes();
 
     app.listen(PORT, () => {
-      console.log(`Mail Tracker API running on http://localhost:${PORT}`);
+      console.log(`Mail Tracker API running`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

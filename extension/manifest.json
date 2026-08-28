@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Mail Tracker",
+  "name": "SideKick Mail Tracker",
   "version": "0.1.0",
   "description": "Track email open events from Gmail.",
   "permissions": [

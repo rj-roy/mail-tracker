@@ -4,9 +4,9 @@ export interface GoogleOAuthConfig {
   redirectUri: string;
 }
 
-export const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-export const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
-export const GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v2/userinfo";
+export const GOOGLE_AUTH_URL = process.env.GOOGLE_AUTH_URL;
+export const GOOGLE_TOKEN_URL = process.env.GOOGLE_TOKEN_URL;
+export const GOOGLE_USERINFO_URL = process.env.GOOGLE_USERINFO_URL;
 
 export const GOOGLE_SCOPES = [
   "https://www.googleapis.com/auth/gmail.send",
@@ -27,8 +27,7 @@ export function getGoogleOAuthConfig(): GoogleOAuthConfig {
     clientId: process.env.GOOGLE_CLIENT_ID ?? "",
     clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     redirectUri:
-      process.env.GOOGLE_REDIRECT_URI ??
-      "http://localhost:5000/auth/google/callback",
+      process.env.GOOGLE_REDIRECT_URI!,
   };
 }
 
@@ -41,5 +40,5 @@ export function isGoogleConfigured(): boolean {
 }
 
 export function getSessionSecret(): string {
-  return process.env.SESSION_SECRET ?? "dev-insecure-session-secret";
+  return process.env.SESSION_SECRET!;
 }

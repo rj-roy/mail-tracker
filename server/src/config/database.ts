@@ -1,15 +1,15 @@
 import { MongoClient, Db } from "mongodb";
 
-const mongoUri = process.env.MONGODB_URI
-  ? new MongoClient(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-    })
+const mongoUri = process.env.MONGODB_URI ?
+  new MongoClient(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+  })
   : null;
 
 let dbPromise: Promise<Db> | null = null;
 
 function getDbName(): string {
-  return process.env.MONGODB_DB_NAME || "mail_tracker";
+  return process.env.MONGODB_DB_NAME!;
 }
 
 export function connectDatabase(): Promise<Db> {
@@ -20,12 +20,10 @@ export function connectDatabase(): Promise<Db> {
   }
 
   if (!dbPromise) {
-    dbPromise = mongoUri
-      .connect()
-      .then(() => {
-        console.log("MongoDB connected");
-        return mongoUri!.db(getDbName());
-      })
+    dbPromise = mongoUri.connect().then(() => {
+      console.log("MongoDB connected");
+      return mongoUri!.db(getDbName());
+    })
       .catch((error: unknown) => {
         dbPromise = null;
         throw error;

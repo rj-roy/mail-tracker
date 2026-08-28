@@ -16,22 +16,22 @@ export async function createIndexes() {
 async function createIndexesNow() {
   const db = await getDatabase();
 
-  await db.collection("users").createIndex(
+  await db.collection(process.env.USER_COLLECTION!).createIndex(
     { googleId: 1 },
     { unique: true }
   );
 
-  await db.collection("tracked_emails").createIndex(
+  await db.collection(process.env.TRACKED_EMAILS_COLL!).createIndex(
     { trackingId: 1 },
     { unique: true }
   );
 
-  await db.collection("tracked_emails").createIndex({
+  await db.collection(process.env.TRACKED_EMAILS_COLL!).createIndex({
     userId: 1,
     createdAt: -1,
   });
 
-  await db.collection("email_opens").createIndex({
+  await db.collection(process.env.OPEN_EMAIL_COLL!).createIndex({
     trackingId: 1,
     openedAt: -1,
   });

@@ -4,10 +4,7 @@ import {
   getTrackedEmails,
 } from "../services/email-tracking.service.js";
 
-export async function createTrackedEmail(
-  req: Request,
-  res: Response
-): Promise<void> {
+export async function createTrackedEmail(req: Request, res: Response): Promise<void> {
   const { trackingId, recipient, subject } = req.body ?? {};
 
   if (
@@ -35,10 +32,7 @@ export async function createTrackedEmail(
   });
 }
 
-export async function listTrackedEmails(
-  req: Request,
-  res: Response
-): Promise<void> {
+export async function listTrackedEmails(req: Request, res: Response): Promise<void> {
   const user = res.locals.user;
 
   if (!user?._id) {
