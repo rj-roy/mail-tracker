@@ -1,5 +1,9 @@
 import { getFreshAccessToken } from "./google-auth.service.js";
-import { getAppOrigin, trackingPixelUrl } from "../config/app.js";
+import {
+  getAppOrigin,
+  trackingPixelUrl,
+  trackingLinkUrl,
+} from "../config/app.js";
 import { trackedEmailsCollection } from "../models/tracked-email.model.js";
 import type { User } from "../models/user.model.js";
 
@@ -79,18 +83,27 @@ export async function updateTrackedEmailResult(
 }
 
 function buildRawMessage(input: GmailSendInput): string {
-  const pixel = `<img src="${trackingPixelUrl(
-    input.trackingId
-  )}" width="1" height="1" alt="" style="display:block;width:1px;height:1px" />`;
+  const pixelUrl = trackingPixelUrl(input.trackingId);
+  const pixel = [
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:1px;height:1px;line-height:1px;font-size:0;border-collapse:collapse!important;mso-hide:all;">',
+    "<tr><td>",
+    `<img src="${pixelUrl}" alt="" width="1" height="1" style="display:block;border:0;outline:none;text-decoration:none;width:1px;height:1px;min-width:0!important;max-width:1px!important;" />`,
+    "</td></tr>",
+    "</table>",
+    '<span style="font-size:0;color:transparent;display:none;">&nbsp;</span>',
+  ].join("");
 
   const subject = encodeHeader(input.subject || "(no subject)");
   const from = formatAddress(input.user.name, input.user.email);
   const to = input.recipient;
 
   const textPlain = input.body.trim() || " ";
+  const trackingLink = `<a href="${trackingLinkUrl(
+    input.trackingId
+  )}" style="display:none;visibility:hidden;width:0;height:0;font-size:0;line-height:0;opacity:0;" aria-hidden="true">&nbsp;</a>`;
   const htmlBody = `<html><body><div>${escapeHtml(
     input.body
-  )}</div>${pixel}</body></html>`;
+  )}</div>${trackingLink}${pixel}</body></html>`;
 
   const boundary =
     "mailtracker-boundary-" + Math.random().toString(36).slice(2);

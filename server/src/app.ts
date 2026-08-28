@@ -4,6 +4,7 @@ import trackedEmailRoutes from "./routes/tracked-email.routes.js";
 import pixelRoutes from "./routes/pixel.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import sendRoutes from "./routes/send.routes.js";
+import linkRoutes from "./routes/link.routes.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { sessionMiddleware } from "./middleware/session.js";
 
@@ -28,6 +29,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api", trackedEmailRoutes);
 app.use("/api", sendRoutes);
+app.use("/", linkRoutes);
 app.use("/", authRoutes);
 app.use("/", pixelRoutes);
 

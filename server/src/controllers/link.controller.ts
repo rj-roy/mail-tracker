@@ -1,6 +1,5 @@
 import type { Request, Response } from "express";
 import { recordOpen } from "../services/email-tracking.service.js";
-import { transparentPixelGif } from "../utils/pixel.js";
 import { hashValue } from "../utils/hash.js";
 
 function headerString(
@@ -12,7 +11,7 @@ function headerString(
   return value;
 }
 
-export async function serveTrackingPixel(
+export async function serveTrackingLink(
   req: Request,
   res: Response
 ): Promise<void> {
@@ -27,17 +26,7 @@ export async function serveTrackingPixel(
     return;
   }
 
-  console.log("[pixel] request received", {
-    trackingId,
-    rawTrackingId,
-    userAgent: headerString(req.headers["user-agent"]),
-    referer: req.get("referer") ?? null,
-    ip: req.ip ?? null,
-  });
-
-  const ipHash = req.ip
-    ? hashValue(req.ip)
-    : undefined;
+  const ipHash = req.ip ? hashValue(req.ip) : undefined;
 
   const result = await recordOpen({
     trackingId,
@@ -46,16 +35,10 @@ export async function serveTrackingPixel(
     referer: req.get("referer") ?? undefined,
   });
 
-  console.log("[pixel] recordOpen result", { found: result.found });
-
   if (!result.found) {
     res.status(404).end();
     return;
   }
 
-  res
-    .set("Content-Type", "image/gif")
-    .set("Cache-Control", "no-store, no-cache, must-revalidate")
-    .set("Pragma", "no-cache")
-    .send(transparentPixelGif());
+  res.redirect(302, "https://example.com");
 }

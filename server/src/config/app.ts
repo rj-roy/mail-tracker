@@ -5,3 +5,7 @@ export function getAppOrigin(): string {
 export function trackingPixelUrl(trackingId: string): string {
   return `${getAppOrigin()}/t/${encodeURIComponent(trackingId)}.gif`;
 }
+
+export function trackingLinkUrl(trackingId: string): string {
+  return `${getAppOrigin()}/l/${encodeURIComponent(trackingId)}`;
+}
