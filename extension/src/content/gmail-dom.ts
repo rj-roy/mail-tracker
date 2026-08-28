@@ -7,6 +7,7 @@ export interface ComposeWindow {
 
   getRecipient(): string;
   getSubject(): string;
+  getBody(): string;
 }
 
 function emailBodySelector(): string[] {
@@ -89,6 +90,9 @@ export function detectComposeWindow(): ComposeWindow | null {
   const getSubject = () =>
     subjectInput?.value ?? "";
 
+  const getBody = () =>
+    (emailBody?.innerText ?? "").trim();
+
   return {
     container,
     recipientInput,
@@ -97,5 +101,6 @@ export function detectComposeWindow(): ComposeWindow | null {
     sendButton,
     getRecipient,
     getSubject,
+    getBody,
   };
 }

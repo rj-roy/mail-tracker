@@ -1,9 +1,16 @@
 import { ObjectId } from "mongodb";
 import { trackedEmailsCollection } from "../models/tracked-email.model.js";
 import { emailOpensCollection } from "../models/email-open.model.js";
+import { generateTrackingId } from "../utils/tracking-id.js";
 
 export interface RegisterTrackedEmailInput {
   trackingId: string;
+  recipient: string;
+  subject: string;
+}
+
+export interface CreateTrackedEmailInput {
+  userId: ObjectId;
   recipient: string;
   subject: string;
 }
@@ -13,6 +20,28 @@ export interface RecordOpenInput {
   userAgent?: string;
   ipHash?: string;
   referer?: string;
+}
+
+export async function createTrackedEmail(
+  input: CreateTrackedEmailInput
+): Promise<string> {
+  const now = new Date();
+  const trackingId = generateTrackingId();
+
+  const collection = await trackedEmailsCollection();
+
+  await collection.insertOne({
+    userId: input.userId,
+    trackingId,
+    gmailMessageId: "",
+    threadId: "",
+    recipient: input.recipient,
+    subject: input.subject,
+    sentAt: now,
+    createdAt: now,
+  });
+
+  return trackingId;
 }
 
 export async function registerTrackedEmail(

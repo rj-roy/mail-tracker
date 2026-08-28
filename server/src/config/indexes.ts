@@ -16,6 +16,11 @@ export async function createIndexes() {
 async function createIndexesNow() {
   const db = await getDatabase();
 
+  await db.collection("users").createIndex(
+    { googleId: 1 },
+    { unique: true }
+  );
+
   await db.collection("tracked_emails").createIndex(
     { trackingId: 1 },
     { unique: true }

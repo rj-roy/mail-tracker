@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "description": "Track email open events from Gmail.",
   "permissions": [
-    "storage"
+    "storage",
+    "tabs"
   ],
   "host_permissions": [
     "https://mail.google.com/*",

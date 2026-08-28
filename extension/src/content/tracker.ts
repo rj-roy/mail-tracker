@@ -1,11 +1,13 @@
 import type { ComposeWindow } from "./gmail-dom.js";
-import { detectComposeWindow } from "./gmail-dom.js";
-import { injectTrackingPixel } from "./pixel-injector.js";
-import { generateTrackingId } from "../shared/tracking.js";
-import type { TrackEmailMessage } from "../shared/messages.js";
+import type {
+  SendEmailMessage,
+  SendEmailResponse,
+} from "../shared/messages.js";
 
 export class ComposeTracker {
   private compose: ComposeWindow | null = null;
+
+  private sending = false;
 
   get container(): HTMLElement | null {
     return this.compose?.container ?? null;
@@ -37,7 +39,7 @@ export class ComposeTracker {
   }
 
   private readonly handleSendClick = (event: MouseEvent): void => {
-    if (!this.compose) {
+    if (!this.compose || this.sending) {
       return;
     }
 
@@ -52,29 +54,82 @@ export class ComposeTracker {
     }
 
     const recipient = this.compose.getRecipient();
-    const subject = this.compose.getSubject();
 
     if (!recipient) {
       return;
     }
 
-    const trackingId = generateTrackingId();
+    event.preventDefault();
+    event.stopImmediatePropagation();
 
-    injectTrackingPixel(this.compose, trackingId);
-
-    this.notifyBackground({
-      type: "TRACK_EMAIL",
-      trackingId,
+    const message: SendEmailMessage = {
+      type: "SEND_EMAIL",
       recipient,
-      subject,
-    });
+      subject: this.compose.getSubject(),
+      body: this.compose.getBody(),
+    };
+
+    void this.send(message);
   };
 
-  private notifyBackground(message: TrackEmailMessage): void {
-    chrome.runtime
-      .sendMessage(message)
-      .catch((error: unknown) => {
-        console.error("Mail Tracker: failed to notify background", error);
-      });
+  private async send(message: SendEmailMessage): Promise<void> {
+    this.sending = true;
+
+    try {
+      const response = (await chrome.runtime.sendMessage(
+        message
+      )) as SendEmailResponse;
+
+      if (response?.needsAuth) {
+        this.showToast(
+          "Sign in to Mail Tracker to send tracked emails."
+        );
+        return;
+      }
+
+      if (!response?.success) {
+        this.showToast(
+          response?.error ?? "Failed to send tracked email."
+        );
+        return;
+      }
+
+      this.showToast("Tracked email sent.");
+    } catch (error) {
+      console.error("Mail Tracker: failed to send email", error);
+      this.showToast("Failed to send tracked email.");
+    } finally {
+      this.sending = false;
+    }
+  }
+
+  private showToast(message: string): void {
+    const existing = document.querySelector(
+      "[data-mail-tracker-toast]"
+    );
+    existing?.remove();
+
+    const toast = document.createElement("div");
+    toast.setAttribute("data-mail-tracker-toast", "true");
+    toast.textContent = message;
+
+    toast.style.cssText = [
+      "position: fixed",
+      "top: 16px",
+      "left: 50%",
+      "transform: translateX(-50%)",
+      "z-index: 2147483646",
+      "background: #1f2933",
+      "color: #fff",
+      "padding: 10px 16px",
+      "border-radius: 6px",
+      "font-family: system-ui, sans-serif",
+      "font-size: 13px",
+      "box-shadow: 0 4px 12px rgba(0,0,0,0.25)",
+    ].join(";");
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.remove(), 5000);
   }
 }
