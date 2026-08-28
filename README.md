@@ -28,6 +28,8 @@ mail-tracker/
 │   │   ├── utils/
 │   │   ├── app.ts
 │   │   └── server.ts
+│   ├── api/index.ts            # Vercel serverless handler
+│   ├── vercel.json
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -59,6 +61,31 @@ npm run dev
 
 - `MONGODB_URI` and `MONGODB_DB_NAME` come from `server/.env`.
 - Health check: `curl http://localhost:5000/health`
+
+### Deploy to Vercel
+
+The server is set up to run on Vercel serverless functions:
+a real handler at `api/index.ts` (with `vercel.json` routing all paths to it),
+plus lazy MongoDB connection and index creation.
+
+Before deploying, set these **Environment Variables** in your Vercel project
+(Settings → Environment Variables), otherwise DB-backed routes return 500:
+
+```
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<database>
+MONGODB_DB_NAME=mail_tracker
+```
+
+Push the `server/` directory to the repo linked to your Vercel project and
+redeploy. Example: `https://mail-tracker-mu.vercel.app`.
+
+Typecheck the server and its Vercel handler:
+
+```bash
+cd server
+npm run build          # compiles src/ -> dist/
+npx tsc -p tsconfig.api.json   # typechecks api/index.ts + src/
+```
 
 ## Extension (Chrome MV3)
 
