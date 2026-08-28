@@ -15,6 +15,7 @@ export interface EmailOpen {
   referer?: string;
 }
 
-export function emailOpensCollection() {
-  return getDatabase().collection<EmailOpen>("email_opens");
+export async function emailOpensCollection() {
+  const db = await getDatabase();
+  return db.collection<EmailOpen>("email_opens");
 }

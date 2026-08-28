@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://mail-tracker-mu.vercel.app";
 
 export function generateTrackingId(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(16));

@@ -1,6 +1,6 @@
 import type { TrackEmailMessage } from "../shared/messages.js";
 
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://mail-tracker-mu.vercel.app";
 
 export interface CreateTrackedEmailRequest {
   trackingId: string;

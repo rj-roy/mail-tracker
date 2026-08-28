@@ -6,28 +6,33 @@ if (!mongoUri) {
   throw new Error("MONGODB_URI is not defined");
 }
 
-const client = new MongoClient(mongoUri);
+const client = new MongoClient(mongoUri, {
+  serverSelectionTimeoutMS: 5000,
+});
 
-let db: Db | null = null;
+let dbPromise: Promise<Db> | null = null;
 
-export async function connectDatabase(): Promise<Db> {
-  if (db) {
-    return db;
-  }
-
-  await client.connect();
-
-  db = client.db(process.env.MONGODB_DB_NAME || "mail_tracker");
-
-  console.log("MongoDB connected");
-
-  return db;
+function getDbName(): string {
+  return process.env.MONGODB_DB_NAME || "mail_tracker";
 }
 
-export function getDatabase(): Db {
-  if (!db) {
-    throw new Error("Database has not been initialized");
+export function connectDatabase(): Promise<Db> {
+  if (!dbPromise) {
+    dbPromise = client
+      .connect()
+      .then(() => {
+        console.log("MongoDB connected");
+        return client.db(getDbName());
+      })
+      .catch((error: unknown) => {
+        dbPromise = null;
+        throw error;
+      });
   }
 
-  return db;
+  return dbPromise;
+}
+
+export async function getDatabase(): Promise<Db> {
+  return connectDatabase();
 }

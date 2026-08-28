@@ -17,6 +17,7 @@ export interface TrackedEmail {
   createdAt: Date;
 }
 
-export function trackedEmailsCollection() {
-  return getDatabase().collection<TrackedEmail>("tracked_emails");
+export async function trackedEmailsCollection() {
+  const db = await getDatabase();
+  return db.collection<TrackedEmail>("tracked_emails");
 }

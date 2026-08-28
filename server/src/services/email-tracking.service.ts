@@ -22,7 +22,7 @@ export async function registerTrackedEmail(
   const gmailMessageId = `unknown:${input.trackingId}`;
   const threadId = "";
 
-  const collection = trackedEmailsCollection();
+  const collection = await trackedEmailsCollection();
 
   const existing = await collection.findOne({
     trackingId: input.trackingId,
@@ -47,7 +47,7 @@ export async function registerTrackedEmail(
 export async function recordOpen(
   input: RecordOpenInput
 ): Promise<{ found: boolean }> {
-  const collection = trackedEmailsCollection();
+  const collection = await trackedEmailsCollection();
 
   const tracked = await collection.findOne({
     trackingId: input.trackingId,
@@ -57,7 +57,8 @@ export async function recordOpen(
     return { found: false };
   }
 
-  await emailOpensCollection().insertOne({
+  const opens = await emailOpensCollection();
+  await opens.insertOne({
     trackingId: input.trackingId,
     openedAt: new Date(),
     userAgent: input.userAgent,
