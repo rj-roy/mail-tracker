@@ -14,6 +14,10 @@ export interface SendEmailMessage {
   body: string;
 }
 
+export interface GetTrackedEmailsMessage {
+  type: "GET_TRACKED_EMAILS";
+}
+
 export type ContentToBackgroundMessage =
   | TrackEmailMessage
   | SendEmailMessage;
@@ -41,12 +45,23 @@ export interface SignInMessage {
 
 export type PopupToBackgroundMessage =
   | GetAuthStatusMessage
-  | SignInMessage;
+  | SignInMessage
+  | GetTrackedEmailsMessage;
 
 export interface AuthStatusResponse {
   signedIn: boolean;
   email?: string;
   name?: string;
   picture?: string;
+}
+
+export interface TrackedEmailEntry {
+  trackingId: string;
+  recipient: string;
+  subject: string;
+  sentAt: string;
+  createdAt: string;
+  openCount: number;
+  lastOpenedAt: string | null;
 }
 

@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import {
   registerTrackedEmail,
+  getTrackedEmails,
 } from "../services/email-tracking.service.js";
 
 export async function createTrackedEmail(
@@ -31,5 +32,27 @@ export async function createTrackedEmail(
   res.status(201).json({
     success: true,
     trackingId,
+  });
+}
+
+export async function listTrackedEmails(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const user = res.locals.user;
+
+  if (!user?._id) {
+    res.status(401).json({
+      success: false,
+      message: "Authentication required",
+    });
+    return;
+  }
+
+  const emails = await getTrackedEmails(user._id);
+
+  res.json({
+    success: true,
+    emails,
   });
 }

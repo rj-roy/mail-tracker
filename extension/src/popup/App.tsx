@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import type { AuthStatusResponse } from "../shared/messages.js";
+import type {
+  AuthStatusResponse,
+  TrackedEmailEntry,
+} from "../shared/messages.js";
 
 type Status =
   | { state: "idle" }
@@ -15,10 +18,20 @@ export default function App() {
     state: "idle",
   });
   const [signingIn, setSigningIn] = useState(false);
+  const [trackedEmails, setTrackedEmails] = useState<
+    TrackedEmailEntry[]
+  >([]);
+  const [emailsLoading, setEmailsLoading] = useState(false);
 
   useEffect(() => {
     refreshAuthStatus();
   }, []);
+
+  useEffect(() => {
+    if (auth?.signedIn) {
+      fetchTrackedEmailsList();
+    }
+  }, [auth?.signedIn]);
 
   const refreshAuthStatus = async () => {
     try {
@@ -30,6 +43,20 @@ export default function App() {
       setAuth({ signedIn: false });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchTrackedEmailsList = async () => {
+    setEmailsLoading(true);
+    try {
+      const response = (await chrome.runtime.sendMessage({
+        type: "GET_TRACKED_EMAILS",
+      })) as { success?: boolean; emails?: TrackedEmailEntry[] };
+      setTrackedEmails(response.emails ?? []);
+    } catch {
+      setTrackedEmails([]);
+    } finally {
+      setEmailsLoading(false);
     }
   };
 
@@ -157,6 +184,78 @@ export default function App() {
       )}
       {testStatus.state === "error" && (
         <p style={{ color: "#cf222e" }}>{testStatus.message}</p>
+      )}
+
+      {auth?.signedIn && (
+        <section
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: 8,
+            padding: 12,
+            marginTop: 12,
+          }}
+        >
+          <h3 style={{ margin: "0 0 8px", fontSize: 14 }}>
+            Tracked emails
+          </h3>
+
+          {emailsLoading ? (
+            <p style={{ margin: 0, color: "#666" }}>Loading…</p>
+          ) : trackedEmails.length === 0 ? (
+            <p style={{ margin: 0, color: "#666" }}>No tracked emails yet.</p>
+          ) : (
+            <ul
+              style={{
+                listStyle: "none",
+                margin: 0,
+                padding: 0,
+                maxHeight: 260,
+                overflowY: "auto",
+              }}
+            >
+              {trackedEmails.map((email) => (
+                <li
+                  key={email.trackingId}
+                  style={{
+                    borderBottom: "1px solid #eee",
+                    padding: "8px 0",
+                  }}
+                >
+                  <div style={{ fontWeight: 600, fontSize: 13 }}>
+                    {email.subject || "(no subject)"}
+                  </div>
+                  <div style={{ fontSize: 12, color: "#57606a" }}>
+                    {email.recipient}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 12,
+                      marginTop: 4,
+                      color: email.openCount > 0 ? "#1a7f37" : "#cf222e",
+                    }}
+                  >
+                    {email.openCount > 0
+                      ? `Opened ${email.openCount} time${email.openCount > 1 ? "s" : ""}`
+                      : "Not opened yet"}
+                  </div>
+                  {email.lastOpenedAt && (
+                    <div style={{ fontSize: 11, color: "#8b949e" }}>
+                      Last opened{" "}
+                      {new Date(email.lastOpenedAt).toLocaleString()}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <button
+            onClick={() => void fetchTrackedEmailsList()}
+            style={{ marginTop: 8 }}
+          >
+            Refresh
+          </button>
+        </section>
       )}
     </main>
   );

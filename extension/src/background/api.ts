@@ -2,6 +2,7 @@ import type {
   SendEmailMessage,
   SendEmailResponse,
   TrackEmailMessage,
+  TrackedEmailEntry,
 } from "../shared/messages.js";
 
 const API_BASE_URL = "https://mail-tracker-mu.vercel.app";
@@ -116,4 +117,26 @@ export async function sendEmail(
     trackingId: data.trackingId,
     gmailMessageId: data.gmailMessageId,
   };
+}
+
+export async function fetchTrackedEmails(): Promise<TrackedEmailEntry[]> {
+  const response = await fetch(`${API_BASE_URL}/api/tracked-emails`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (response.status === 401) {
+    return [];
+  }
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tracked emails (${response.status})`);
+  }
+
+  const data = (await response.json()) as {
+    success?: boolean;
+    emails?: TrackedEmailEntry[];
+  };
+
+  return data.emails ?? [];
 }

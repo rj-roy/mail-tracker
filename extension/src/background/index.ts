@@ -1,4 +1,4 @@
-import { registerTrackedEmail, sendEmail } from "./api.js";
+import { registerTrackedEmail, sendEmail, fetchTrackedEmails } from "./api.js";
 import { getAuthStatus, openSignIn } from "./auth.js";
 import type {
   TrackEmailMessage,
@@ -65,6 +65,11 @@ async function handleMessage(
     case "GET_AUTH_STATUS": {
       const status = await getAuthStatus();
       return status;
+    }
+
+    case "GET_TRACKED_EMAILS": {
+      const emails = await fetchTrackedEmails();
+      return { success: true, emails };
     }
 
     case "SIGN_IN": {
