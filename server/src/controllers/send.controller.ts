@@ -34,10 +34,13 @@ export async function sendTrackedEmailHandler(
       return;
     }
 
+    const senderFingerprint = buildSenderFingerprint(req);
+
     const trackingId = await createTrackedEmail({
       userId: user._id,
       recipient,
       subject,
+      senderFingerprint,
     });
 
     const result = await sendTrackedEmail({
@@ -67,4 +70,18 @@ export async function sendTrackedEmailHandler(
       message: error instanceof Error ? error.message : "Internal server error",
     });
   }
+}
+
+function buildSenderFingerprint(req: Request): string {
+  const ua = headerString(req.headers["user-agent"]) || "";
+  return ua;
+}
+
+function headerString(
+  value: string | string[] | undefined
+): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
 }
