@@ -4,7 +4,7 @@ import { getSessionSecret } from "../config/google-oauth.js";
 const COOKIE_NAME = process.env.RAW_COOKIE_NAME!;
 
 const sign = (value: string) => {
-  return createHmac('sha256', getSessionSecret()).update(value).digest('base64');
+  return createHmac('sha256', getSessionSecret()).update(value).digest('base64url');
 };
 
 export function createSessionCookieValue(googleId: string): string {
