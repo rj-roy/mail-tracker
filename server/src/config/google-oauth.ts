@@ -4,9 +4,9 @@ export interface GoogleOAuthConfig {
   redirectUri: string;
 }
 
-export const GOOGLE_AUTH_URL = process.env.GOOGLE_AUTH_URL;
-export const GOOGLE_TOKEN_URL = process.env.GOOGLE_TOKEN_URL;
-export const GOOGLE_USERINFO_URL = process.env.GOOGLE_USERINFO_URL;
+export const GOOGLE_AUTH_URL = process.env.GOOGLE_AUTH_URL!;
+export const GOOGLE_TOKEN_URL = process.env.GOOGLE_TOKEN_URL!;
+export const GOOGLE_USERINFO_URL = process.env.GOOGLE_USERINFO_URL!;
 
 export const GOOGLE_SCOPES = [
   "https://www.googleapis.com/auth/gmail.send",

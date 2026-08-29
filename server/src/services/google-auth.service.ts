@@ -67,7 +67,7 @@ export async function exchangeCodeForTokens(
     grant_type: "authorization_code",
   });
 
-  const response = await fetch(GOOGLE_TOKEN_URL, {
+  const response = await fetch(GOOGLE_TOKEN_URL!, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -87,7 +87,7 @@ export async function exchangeCodeForTokens(
 export async function fetchGoogleUserInfo(
   accessToken: string
 ): Promise<GoogleUserInfo> {
-  const response = await fetch(GOOGLE_USERINFO_URL, {
+  const response = await fetch(GOOGLE_USERINFO_URL!, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -188,7 +188,7 @@ export async function refreshAccessToken(
     grant_type: "refresh_token",
   });
 
-  const response = await fetch(GOOGLE_TOKEN_URL, {
+  const response = await fetch(GOOGLE_TOKEN_URL!, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",

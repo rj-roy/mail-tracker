@@ -1,23 +1,15 @@
 import type { Request, Response } from "express";
 import { randomBytes } from "node:crypto";
-import {
-  buildAuthorizeUrl,
-  exchangeCodeForTokens,
-  fetchGoogleUserInfo,
-  upsertUser,
-} from "../services/google-auth.service.js";
+import { buildAuthorizeUrl, exchangeCodeForTokens, fetchGoogleUserInfo, upsertUser, } from "../services/google-auth.service.js";
 import {
   createSessionCookieValue,
   COOKIE_NAME,
 } from "../utils/session-cookie.js";
 import { getAppOrigin } from "../config/app.js";
 
-const STATE_COOKIE = "mail_tracker_oauth_state";
+const STATE_COOKIE = process.env.STATE_COOKIE_NAME!;
 
-function setSessionCookie(
-  res: Response,
-  googleId: string
-): void {
+function setSessionCookie(res: Response, googleId: string): void {
   res.cookie(
     COOKIE_NAME,
     createSessionCookieValue(googleId),
@@ -31,10 +23,7 @@ function setSessionCookie(
   );
 }
 
-export async function authorize(
-  req: Request,
-  res: Response
-): Promise<void> {
+export async function authorize(req: Request, res: Response): Promise<void> {
   try {
     const state = randomBytes(16).toString("hex");
 
@@ -55,10 +44,7 @@ export async function authorize(
   }
 }
 
-export async function callback(
-  req: Request,
-  res: Response
-): Promise<void> {
+export async function callback(req: Request, res: Response): Promise<void> {
   const { code, state } = req.query;
   const expectedState = parseCookieHeader(
     req.headers.cookie,
@@ -95,10 +81,7 @@ export async function callback(
   }
 }
 
-export function success(
-  _req: Request,
-  res: Response
-): void {
+export function success(_req: Request, res: Response): void {
   res
     .set("Content-Type", "text/html; charset=utf-8")
     .send(
@@ -106,10 +89,7 @@ export function success(
     );
 }
 
-export function me(
-  _req: Request,
-  res: Response
-): void {
+export function me(_req: Request, res: Response): void {
   const user = res.locals.user;
 
   if (!user) {
@@ -131,18 +111,12 @@ export function me(
   });
 }
 
-export function logout(
-  req: Request,
-  res: Response
-): void {
+export function logout(req: Request, res: Response): void {
   res.clearCookie(COOKIE_NAME, { path: "/" });
   res.json({ success: true });
 }
 
-function parseCookieHeader(
-  header: string | undefined,
-  name: string
-): string | undefined {
+function parseCookieHeader(header: string | undefined, name: string): string | undefined {
   if (!header) {
     return undefined;
   }
