@@ -94,7 +94,7 @@ export default function App() {
 
   const runApiHealth = async (): Promise<string> => {
     const response = await fetch(
-      "https://mail-tracker-mu.vercel.app/health",
+      "http://localhost:5000/health",
       { method: "GET" }
     );
 

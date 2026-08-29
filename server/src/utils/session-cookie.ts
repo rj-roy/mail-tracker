@@ -18,6 +18,7 @@ export function readSessionCookieValue(raw: string | undefined): string | null {
   };
 
   const [payload, signature] = raw.split(".");
+  console.log(payload?.length, signature?.length, 'lolollol');
 
   if (!payload || !signature) {
     return null;
@@ -27,6 +28,8 @@ export function readSessionCookieValue(raw: string | undefined): string | null {
 
   const signatureBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expected);
+
+  console.log(signatureBuffer.length, expectedBuffer.length, 'llll');
 
   if (
     signatureBuffer.length !== expectedBuffer.length ||

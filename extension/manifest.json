@@ -9,7 +9,7 @@
   ],
   "host_permissions": [
     "https://mail.google.com/*",
-    "https://mail-tracker-mu.vercel.app/*"
+    "http://localhost:5000/*"
   ],
   "background": {
     "service_worker": "background.js",
