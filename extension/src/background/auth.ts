@@ -2,7 +2,7 @@ import { checkAuth } from "./api.js";
 
 export type { AuthStatus } from "./api.js";
 
-const API_BASE_URL = "https://mail-tracker-mu.vercel.app";
+const API_BASE_URL = "http://localhost:5000";
 
 export function getAuthBaseUrl(): string {
   return API_BASE_URL;

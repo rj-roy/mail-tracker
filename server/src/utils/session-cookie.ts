@@ -4,7 +4,7 @@ import { getSessionSecret } from "../config/google-oauth.js";
 const COOKIE_NAME = process.env.RAW_COOKIE_NAME!;
 
 const sign = (value: string) => {
-  return createHmac('sha256', getSessionSecret()).update(value).digest('base64');
+  return createHmac('sha256', getSessionSecret()).update(value).digest("base64url");
 };
 
 export function createSessionCookieValue(googleId: string): string {
@@ -18,7 +18,6 @@ export function readSessionCookieValue(raw: string | undefined): string | null {
   };
 
   const [payload, signature] = raw.split(".");
-  console.log(payload?.length, signature?.length, 'lolollol');
 
   if (!payload || !signature) {
     return null;
@@ -29,7 +28,6 @@ export function readSessionCookieValue(raw: string | undefined): string | null {
   const signatureBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expected);
 
-  console.log(signatureBuffer.length, expectedBuffer.length, 'llll');
 
   if (
     signatureBuffer.length !== expectedBuffer.length ||
