@@ -1,7 +1,4 @@
-import type {
-  SendEmailMessage,
-  SendEmailResponse,
-} from "../shared/messages.js";
+import type { SendEmailMessage, SendEmailResponse, } from "../shared/messages.js";
 
 export interface ComposeWindow {
   container: HTMLElement;
@@ -43,10 +40,7 @@ const BODY_SELECTORS = [
   "div[contenteditable='true']",
 ];
 
-function queryFirst<T extends Element>(
-  root: ParentNode,
-  selectors: string[]
-): T | null {
+function queryFirst<T extends Element>(root: ParentNode, selectors: string[]): T | null {
   for (const selector of selectors) {
     const el = root.querySelector<T>(selector);
     if (el) {
@@ -194,8 +188,7 @@ export interface SendResult {
   error?: string;
 }
 
-export async function sendTrackedEmail(
-  compose: ComposeWindow,
+export async function sendTrackedEmail(compose: ComposeWindow,
   sendMessage: (m: SendEmailMessage) => Promise<unknown>
 ): Promise<SendResult> {
   const recipient = compose.getRecipient();
@@ -211,9 +204,7 @@ export async function sendTrackedEmail(
     body: compose.getBody(),
   };
 
-  const response = (await sendMessage(
-    message
-  )) as SendEmailResponse | undefined;
+  const response = (await sendMessage(message)) as SendEmailResponse | undefined;
 
   if (!response) {
     return { ok: false, error: "No response from background." };

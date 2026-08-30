@@ -9,7 +9,7 @@ import {
 let sending = false;
 
 export function handleSendEvent(event: MouseEvent): void {
-  log("send event", event.type);
+  console.log('[SideKick]', 'send event', event.type);
 
   if (sending) {
     return;
@@ -19,7 +19,7 @@ export function handleSendEvent(event: MouseEvent): void {
     return;
   }
 
-  log("send button hit on", event.type);
+  console.log('[SideKick]',"send button hit on", event.type);
 
   event.preventDefault();
   event.stopImmediatePropagation();
@@ -27,7 +27,7 @@ export function handleSendEvent(event: MouseEvent): void {
   const compose = findComposeFromSendTarget(event.target);
 
   if (!compose) {
-    warn("compose not found for send button");
+    console.warn("[SideKick]", "compose not found for send button");
     showToast("Mail Tracker: could not find the compose window.");
     return;
   }
@@ -41,18 +41,18 @@ export function handleSendEvent(event: MouseEvent): void {
   }
 
   if (!recipient) {
-    warn("recipient not found; send blocked");
+    console.warn("[SideKick]", "recipient not found; send blocked");
     showToast("Mail Tracker: no recipient detected.");
     return;
   }
 
-  log("intercepting send to", recipient);
+  console.log("[SideKick]", "intercepting send to", recipient);
 
   void doSend(compose);
 }
 
 export function handleSendShortcut(event: KeyboardEvent): void {
-  log("keydown", event.key);
+  console.log('[SideKick]', "keydown", event.key);
 
   if (sending) {
     return;
@@ -84,10 +84,10 @@ async function doSend(compose: ComposeWindow): Promise<void> {
 
     if (result.needsAuth) {
       showToast("Sign in to Mail Tracker to send tracked emails.");
-      warn("send blocked: not signed in");
+      console.warn('[SideKick]', "send blocked: not signed in");
     } else if (!result.ok) {
       showToast(result.error ?? "Failed to send tracked email.");
-      warn("send failed:", result.error);
+      console.warn('[SideKick]', "send failed:", result.error);
     } else {
       showToast("Tracked email sent.");
     }
@@ -125,12 +125,4 @@ export function showToast(message: string): void {
   document.body.appendChild(toast);
 
   setTimeout(() => toast.remove(), 5000);
-}
-
-function log(...args: unknown[]): void {
-  console.log("[Mail Tracker]", ...args);
-}
-
-function warn(...args: unknown[]): void {
-  console.warn("[Mail Tracker]", ...args);
-}
+};
